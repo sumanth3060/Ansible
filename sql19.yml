@@ -1,0 +1,12 @@
+---
+- name: Playbook for installing SQL express
+  hosts: all
+  gather_facts: True
+  become_method: runas
+  tasks:
+  - name: Installing SQL
+    win_command: c:\sql19\SQLEXPR\SETUP.exe /configurationfile=c:\sql19\SQLEXPR\sql_conf.ini
+    args:
+      chdir: c:\sql19\SQLEXPR
+    become: yes
+    become_user: Administrator

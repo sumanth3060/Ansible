@@ -1,0 +1,36 @@
+---
+- name: Install IIS
+  hosts: web_servers
+  gather_facts: true
+  tasks:
+   - win_feature:
+       name: "web-server"
+       state: present
+       restart: yes
+       include_sub_features: yes
+       include_management_tools: yes
+
+   - name: Install webpicmd
+     win_command: msiexec /i Webpi.msi /quiet /qn /passive
+     args: 
+       chdir: c:\MS_webDeploy\
+     become: yes
+     become_user: Administrator
+
+   - name: Install webdeploy
+     win_command: WebpiCmd /Install /Products:WDeploy36NoSMO /AcceptEULA
+     args:
+       chdir: 'c:\Program Files\Microsoft\Web Platform Installer\'
+     become: yes
+     become_user: Administrator
+
+       
+   - name: Copy index.html to wwwroot
+     win_copy:
+       src: index.html
+       dest: C:\inetpub\wwwroot\index.html
+       force: yes
+
+  handlers:
+   - name: restart IIS
+     win_shell: '& {iisreset}'
